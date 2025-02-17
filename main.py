@@ -70,6 +70,35 @@ def post_detail(id):
     return render_template("post_detail.html", post_article=post_article)
 
 
+@app.route('/posts/<int:id>/delete')
+def post_delete(id):
+    post_article = Article.query.get_or_404(id)
+    try:
+        db.session.delete(post_article)
+        db.session.commit()
+        return redirect('/posts')
+
+    except:
+        return "При удалении произошла ошибка"
+
+
+@app.route('/posts/<int:id>/update', methods=['POST', 'GET'])
+def post_update(id):
+    post_article = Article.query.get(id)
+    if request.method == "POST":
+        post_article.title = request.form['title']
+        post_article.intro = request.form['intro']
+        post_article.text = request.form['text']
+
+        try:
+            db.session.commit()
+            return redirect('/posts')
+        except:
+            return "При обновлении произошла ошибка!"
+    else:
+        return render_template("post_update.html", post_article=post_article)
+
+
 @app.route('/contacts')
 def contacts():
     return render_template("contacts.html")
